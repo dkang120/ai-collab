@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#101827">
+<title>AI Collab — ChatGPT × Grok</title>
+<style>
+:root{--bg:#0b1220;--panel:#121d2e;--panel2:#18263a;--line:#293950;--txt:#edf3fb;--muted:#9eafc5;--accent:#9ac4ff;--good:#8de0b0}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(160deg,#0b1220,#101b2d 65%,#0b1220);color:var(--txt);font:16px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+main{max-width:850px;margin:auto;padding:22px 16px 60px}.top{display:flex;align-items:center;gap:12px;margin-bottom:20px}.logo{width:44px;height:44px;border-radius:14px;background:#223652;display:grid;place-items:center;font-size:23px}.top h1{font-size:22px;margin:0}.sub{color:var(--muted);font-size:13px;margin-top:4px}
+.card{background:rgba(18,29,46,.96);border:1px solid var(--line);border-radius:18px;padding:17px;margin:14px 0;box-shadow:0 12px 35px #0002}
+h2{font-size:17px;margin:0 0 12px}.hint{font-size:13px;color:var(--muted);line-height:1.5;margin:8px 0 12px}
+label{display:block;font-size:13px;color:var(--muted);margin:12px 0 7px}
+input,textarea{width:100%;border:1px solid var(--line);background:#0c1625;color:var(--txt);border-radius:12px;padding:12px;font:inherit;outline:none}
+textarea{min-height:120px;resize:vertical;line-height:1.45}textarea:focus,input:focus{border-color:var(--accent)}
+button,.link{border:0;border-radius:12px;padding:12px 15px;font-weight:650;font-size:14px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:7px}
+.primary{background:#b8d5ff;color:#102039}.secondary,.link{background:#22344d;color:var(--txt);border:1px solid #344a67}.danger{background:#39252d;color:#ffd7df;border:1px solid #63404c}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.step{border:1px solid var(--line);background:#0e1929;border-radius:14px;padding:13px}.step b{display:block;margin-bottom:5px}.pill{display:inline-block;border:1px solid #3b5878;border-radius:30px;padding:4px 9px;color:var(--accent);font-size:11px;margin-bottom:8px}
+.small{font-size:12px;color:var(--muted)}.status{color:var(--good);font-size:12px;min-height:18px}.footer{font-size:12px;color:var(--muted);line-height:1.5;text-align:center;margin-top:24px}
+@media(max-width:600px){main{padding:18px 12px 45px}.grid{grid-template-columns:1fr}.actions>*{flex:1 1 100%}.top h1{font-size:20px}}
+</style>
+</head>
+<body>
+<main>
+<header class="top"><div class="logo">🤝</div><div><h1>AI Collab</h1><div class="sub">ChatGPT × Grok · your mobile collaboration workspace</div></div></header>
+
+<section class="card">
+<h2>1 · Describe the task</h2>
+<p class="hint">Enter a question, project, decision, or idea. This dashboard coordinates the real ChatGPT and Grok websites using copy-and-paste; it does not access either account or call paid APIs.</p>
+<label for="task">Your task</label>
+<textarea id="task" placeholder="Example: Compare three approaches to launching a small business..."></textarea>
+<label for="context">Shared context or constraints (optional)</label>
+<textarea id="context" style="min-height:80px" placeholder="Audience, budget, preferences, links, requirements..."></textarea>
+<div class="actions"><button class="primary" id="make">Generate prompts</button><button class="secondary" id="save">Save project</button></div>
+<div class="status" id="status" aria-live="polite"></div>
+</section>
+
+<section class="card" id="prompts" hidden>
+<h2>2 · Get independent answers</h2>
+<div class="grid">
+<div class="step"><span class="pill">MODEL 1</span><b>ChatGPT</b><p class="hint">Open ChatGPT, paste the prompt, and copy its complete answer back here.</p><button class="secondary" id="copyGPT">Copy ChatGPT prompt</button><div class="actions"><a class="link" href="https://chatgpt.com/" target="_blank" rel="noopener">Open ChatGPT ↗</a></div></div>
+<div class="step"><span class="pill">MODEL 2</span><b>Grok</b><p class="hint">Open Grok, paste the prompt, and copy its complete answer back here. Ask it to use X search if relevant and available in your account.</p><button class="secondary" id="copyGrok">Copy Grok prompt</button><div class="actions"><a class="link" href="https://grok.com/" target="_blank" rel="noopener">Open Grok ↗</a></div></div>
+</div>
+<label for="gptAnswer">ChatGPT's answer</label><textarea id="gptAnswer" placeholder="Paste ChatGPT's response here..."></textarea>
+<label for="grokAnswer">Grok's answer</label><textarea id="grokAnswer" placeholder="Paste Grok's response here..."></textarea>
+<div class="actions"><button class="primary" id="critique">Create cross-critique prompt</button></div>
+</section>
+
+<section class="card" id="critiqueBox" hidden>
+<h2>3 · Cross-critique</h2>
+<p class="hint">Send this prompt to either model (ideally both, one at a time) to identify disagreements and weak evidence.</p>
+<textarea id="critiquePrompt"></textarea>
+<div class="actions"><button class="secondary" id="copyCritique">Copy critique prompt</button><a class="link" href="https://chatgpt.com/" target="_blank" rel="noopener">ChatGPT ↗</a><a class="link" href="https://grok.com/" target="_blank" rel="noopener">Grok ↗</a></div>
+<label for="critiqueAnswer">Paste a critique response (optional)</label><textarea id="critiqueAnswer" placeholder="Paste either model's critique..."></textarea>
+<button class="primary" id="synthesis">Create final synthesis prompt</button>
+</section>
+
+<section class="card" id="finalBox" hidden>
+<h2>4 · Final synthesis</h2>
+<p class="hint">Copy this into ChatGPT or Grok for a final answer that distinguishes supported conclusions from unresolved disagreements.</p>
+<textarea id="finalPrompt"></textarea>
+<div class="actions"><button class="primary" id="copyFinal">Copy synthesis prompt</button><a class="link" href="https://chatgpt.com/" target="_blank" rel="noopener">Open ChatGPT ↗</a><a class="link" href="https://grok.com/" target="_blank" rel="noopener">Open Grok ↗</a></div>
+<label for="finalAnswer">Final answer / decision</label><textarea id="finalAnswer" placeholder="Paste the final synthesis here..."></textarea>
+<div class="actions"><button class="secondary" id="export">Export session (.txt)</button><button class="danger" id="clear">Clear workspace</button></div>
+</section>
+<div class="footer">Free manual orchestration · Works in a mobile browser · Session data is stored in this browser only when you save it. Do not paste passwords, API keys, or sensitive personal information.</div>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+let prompts={gpt:"",grok:""};
+function base(){return `TASK:\\n${$("task").value.trim()}\\n\\nSHARED CONTEXT / CONSTRAINTS:\\n${$("context").value.trim()||"None provided"}\\n\\nPlease work independently. State assumptions, distinguish facts from estimates, identify uncertainty, and provide sources or explain what needs verification. Do not assume another AI's answer is correct.`}
+function makePrompts(){
+ if(!$("task").value.trim()){ $("status").textContent="Enter a task first."; return; }
+ const common=base();
+ prompts.gpt=`You are ChatGPT. Independently solve the task below. Give a clear, useful answer with reasoning, assumptions, evidence, uncertainties, and practical next steps. Do not invent sources.\\n\\n${common}`;
+ prompts.grok=`You are Grok. Independently solve the task below. Give a clear, useful answer with reasoning, assumptions, evidence, uncertainties, and practical next steps. Use X search or web research if relevant and available; distinguish posts/opinions from verified facts. Do not invent sources.\\n\\n${common}`;
+ $("prompts").hidden=false; $("status").textContent="Prompts ready. Run each model separately, then paste both answers below.";
+}
+async function copy(id){try{await navigator.clipboard.writeText($(id).value);$("status").textContent="Copied to clipboard."}catch(e){$(id).select();document.execCommand("copy");$("status").textContent="Selected prompt; use Copy if prompted."}}
+$("make").onclick=makePrompts;
+$("copyGPT").onclick=()=>copyPrompt(prompts.gpt);
+$("copyGrok").onclick=()=>copyPrompt(prompts.grok);
+async function copyPrompt(t){try{await navigator.clipboard.writeText(t);$("status").textContent="Copied. Switch to the model and paste."}catch(e){$("status").textContent="Clipboard unavailable; select and copy the prompt text.";}}
+$("critique").onclick=()=>{
+ if(!$("gptAnswer").value.trim()||!$("grokAnswer").value.trim()){$("status").textContent="Paste both model answers first.";return}
+ $("critiquePrompt").value=`Compare these two independent answers to the original task. Identify: (1) points of agreement, (2) material disagreements, (3) factual claims needing primary-source verification, (4) unsupported assumptions or reasoning gaps, (5) useful insights unique to each answer. Do not decide by majority vote. Explain which claims are best supported and what remains unknown.\\n\\nORIGINAL TASK:\\n${$("task").value}\\n\\nCHATGPT ANSWER:\\n${$("gptAnswer").value}\\n\\nGROK ANSWER:\\n${$("grokAnswer").value}`;
+ $("critiqueBox").hidden=false;
+};
+$("copyCritique").onclick=()=>copy("critiquePrompt");
+$("synthesis").onclick=()=>{
+ $("finalPrompt").value=`Produce a final, actionable response to the original task using both independent answers and the critique below. Resolve disagreements using evidence, not consensus. Clearly label verified facts, assumptions, uncertainty, and any additional research needed. Do not fabricate citations. End with a concise recommendation and next steps.\\n\\nORIGINAL TASK:\\n${$("task").value}\\n\\nCHATGPT ANSWER:\\n${$("gptAnswer").value}\\n\\nGROK ANSWER:\\n${$("grokAnswer").value}\\n\\nCRITIQUE:\\n${$("critiqueAnswer").value||"No separate critique supplied."}`;
+ $("finalBox").hidden=false;
+};
+$("copyFinal").onclick=()=>copy("finalPrompt");
+function snapshot(){return {task:$("task").value,context:$("context").value,gptAnswer:$("gptAnswer").value,grokAnswer:$("grokAnswer").value,critiquePrompt:$("critiquePrompt").value,critiqueAnswer:$("critiqueAnswer").value,finalPrompt:$("finalPrompt").value,finalAnswer:$("finalAnswer").value}}
+$("save").onclick=()=>{try{localStorage.setItem("ai-collab-session",JSON.stringify(snapshot()));$("status").textContent="Saved in this browser on this device."}catch(e){$("status").textContent="Could not save in browser storage."}};
+try{const saved=JSON.parse(localStorage.getItem("ai-collab-session")||"null");if(saved){for(const [k,v] of Object.entries(saved)){if($(k))$(k).value=v} if(saved.task){$("prompts").hidden=false;$("critiqueBox").hidden=!saved.critiquePrompt;$("finalBox").hidden=!saved.finalPrompt;}}}catch(e){}
+$("clear").onclick=()=>{if(confirm("Clear this workspace and its saved browser session?")){localStorage.removeItem("ai-collab-session");document.querySelectorAll("textarea").forEach(x=>x.value="");$("prompts").hidden=true;$("critiqueBox").hidden=true;$("finalBox").hidden=true;$("status").textContent="Workspace cleared."}};
+$("export").onclick=()=>{const s=snapshot();const text=Object.entries(s).map(([k,v])=>k.toUpperCase()+"\\n"+v).join("\\n\\n-------------------------\\n\\n");const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([text],{type:"text/plain"}));a.download="ai-collab-session.txt";a.click();URL.revokeObjectURL(a.href)};
+</script>
+</body></html>
